@@ -1,6 +1,6 @@
 {
     "name": "luannsr12/apiwpp",
-    "description": "Sdk para Api Whatsapp Golang",
+    "description": "SDK PHP Evolution Api Whatsapp",
     "type": "library",
     "license": "MIT",
     "autoload": {
