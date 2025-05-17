@@ -3,6 +3,9 @@
     "description": "SDK PHP Evolution Api Whatsapp",
     "type": "library",
     "license": "MIT",
+    "require": {
+        "php": ">=8.2"
+    },
     "autoload": {
         "psr-4": {
             "Apiwpp\\": "src/"
