@@ -1,547 +1,161 @@
-## SDK PHP Evolution Api Whatsapp
 
-Api Evolution: [Evolution-api](https://doc.evolution-api.com/v2/)
+# apiwpp — SDK PHP para Evolution API WhatsApp
 
-<hr>
+[![Packagist](https://img.shields.io/packagist/v/luannsr12/apiwpp.svg?style=flat)](https://packagist.org/packages/luannsr12/apiwpp)
+[![License](https://img.shields.io/packagist/l/luannsr12/apiwpp.svg?style=flat)](LICENSE)
+[![Downloads](https://img.shields.io/packagist/dt/luannsr12/apiwpp.svg?style=flat)](https://packagist.org/packages/luannsr12/apiwpp)
+[![PHP Version](https://img.shields.io/packagist/php-v/luannsr12/apiwpp.svg?style=flat)](https://www.php.net/)
 
-SDK version: 2.0.7 <br />
-PHP Version: >= 8.2
+## Introdução
 
-## Funções disponíveis
+`apiwpp` é uma SDK em PHP para integração com a Evolution API, possibilitando o envio de mensagens, gerenciamento de dispositivos (instâncias) e configuração de webhooks no WhatsApp de forma simples e eficiente.
 
-- Envio de video
-- Envio de audio
-- Envio de documentos
-- Envio de imagens
-- Envio de texto
-- Checagem do número do whatsapp
-- Imagem do perfil
-- Detalhes do perfil
-- Cria instância
-- Desconecta instância
-- Deleta a instância
+---
 
-## Instalação composer
+## Requisitos
+
+- PHP 8.2 ou superior  
+- Composer  
+- Servidor Evolution API configurado e acessível  
+
+---
+
+## Instalação
 
 ```bash
- composer require luannsr12/apiwpp
+composer require luannsr12/apiwpp
 ```
 
-#### Evolution Version >= 2.1.1
-```php
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Account;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
+---
 
-```
-
-#### Evolution Version anterior a versão 2
-```php
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution\Account;
- use Apiwpp\Api\Evolution\Device;
- use Apiwpp\Api\Evolution\Message;
-
-```
+## Configuração Inicial
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Config\Api;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Account;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
-  
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
-
+Api::setConfigs('SEU_TOKEN_ADMIN', 'URL_DA_SUA_API');
+Api::debug(true); // Ativa o modo debug (opcional)
 ```
 
-## Criar instância
+---
+
+## Gerenciamento de Devices (Instâncias)
+
+### Criar nova instância
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Api\Evolution2\Device;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Criar instância
- $create = Device::create("NOVO_TOKEN_123", "NOME_INSTANCIA");
-
- if($create){
-    echo 'Instância criada com sucesso!';
- }else{
-    var_dump(ExceptionError::getMessage()); // Json response
- }
-
+$response = Device::create('TOKEN_DA_INSTANCIA', 'NOME_DA_INSTANCIA');
+print_r($response);
 ```
 
-
-
-## Recuperar Qrcode
-
-É importante ressaltar que, em caso de buscar o qrcode com dispositivo já conectado retornará erro.
+### Definir instância ativa para envio
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Setar o token
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- $connected = Device::isConnected(); // false or true
-
- if(!$connected){
-    // caso n esteja conectado carrega o qrcode
-    Device::loadQr();
- 
-    // após carregar o qrcode podemos recupera-lo
-    $qrcode = Device::getQrcode();
-
-    // verifica se houve algum erro no processo
-    if(ExceptionError::$error && $qrcode != "" && $qrcode != NULL){
-        // se houve erro imprimir o erro
-       var_dump(ExceptionError::getMessage()); // Json response
-    }else{
-        // Se não ocorreu erro mostra o qrcode
-        echo '<img src="'.$qrcode.'" /> ';
-    }
-
- }else{
-    // Dispositivo já está conectado
-    echo 'Conectado!';
- }
-
-
+Device::setInstance('TOKEN_INSTANCIA', 'NOME_INSTANCIA');
 ```
 
+---
 
-## Desconectar instância
+## Envio de Mensagens
+
+### Mensagem de texto simples
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Api\Evolution2\Message;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
+Message::type('text');
+Message::phone('551199999999');
+Message::text('Olá, esta é uma mensagem de teste.');
 
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Setar o token
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- $connected = Device::isConnected(); // false or true
-
- if($connected){
-
-    $logout = Device::logout();
-
-    if($logout){
-        echo 'Desconectado!';
-    }else{
-       echo 'Erro ao desconectar';
-    }
-
- }else{
-    echo 'Você já está desconectado!';
- }
-
-
+if (Message::send()) {
+    echo 'Mensagem enviada com sucesso!';
+} else {
+    echo 'Falha ao enviar mensagem.';
+}
 ```
 
-
-
-## Deletar instância
+### Enviar mídia (imagem, áudio, vídeo, documento)
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+Message::type('image');
+Message::phone('551199999999');
+Message::file('https://link-da-imagem-ou-caminho-local.jpg');
+Message::caption('Legenda da imagem');
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Setar o token
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- $connected = Device::isConnected(); // false or true
-
- if(!$connected){
-   
-    $delete = Device::delete();
-
-    if($delete){
-        echo 'Deletado!';
-    }else{
-       echo 'Erro ao deletar';
-    }
-
- }else{
-    echo 'Faça logout primeiro';
- }
-
-
+Message::send();
 ```
 
+---
 
-
-## Definir um WebHook para o dispositivo
-
-Irá receber REQUEST:POST toda vez que receber uma mensagem
+## Verificação de Número no WhatsApp
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Api\Evolution2\Number;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
+Number::phone('551199999999');
 
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Setar o token
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- $setWebhook = Device::setWebhook('http://site.com'); // use 'disabled' para desativar o webhook
-
- 
- var_dump($setWebhook); // true or false
- 
-
+if (Number::check()) {
+    echo 'Número existe no WhatsApp.';
+} else {
+    echo 'Número não encontrado.';
+}
 ```
 
+---
 
-## Recuperar o WebHook
+## Webhooks
+
+### Configurar URL para recebimento de mensagens
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Api\Evolution2\Webhook;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(); // default true - Para não debugar não chame a função, ou passe false como parametro
- 
- // Setar o token
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- $webhook = Device::getWebhook();
- 
- var_dump($webhook); // object: ['subscribe' => 'Message', 'webhook' => 'http://site.com' ]
-
-
+Webhook::setUrl('https://seusite.com.br/webhook');
+Webhook::enable(true);
 ```
 
-## Enviar mensagem de texto
+---
+
+## Tratamento de Erros
 
 ```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+use Apiwpp\Error\ExceptionError;
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá enviar a mensagem
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- 
- Message::type('text');
- Message::phone('551199999999');
- Message::text('Mensagem aqui');
-
- if(Message::send()){
-    echo 'Mensagem enviada! <br />';
-    echo 'Id: ' . Message::$lastIdMessage;
- }else{
-    var_dump(ExceptionError::getMessage());
- }
-
-
-
+try {
+    // Código da SDK
+} catch (Exception $e) {
+    echo ExceptionError::getMessage();
+}
 ```
 
-## Enviar video com URL do arquivo.
+---
 
-> É importante informar, que apenas videos no formato .mp4 e .3gpp são aceitos.
+## Exemplos
 
-```php
-<?php 
- 
- require_once 'vendor/autoload.php';
+No diretório `/examples` você encontra scripts prontos para:
 
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
+- Criar e conectar instância  
+- Enviar mensagens simples e mídia  
+- Verificar número WhatsApp  
+- Configurar webhooks  
 
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/', 'Evolution2');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
+---
 
- // Define qual instancia irá enviar a mensagem
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- 
- Message::type('video');
- Message::phone('551199999999');
- Message::fileUrl('http://umsitequalquer.com/arquivos/video.mp4');
- Message::caption('Um texto anexado ao video'); // Opcional
+## Contribuições
 
- if(Message::send()){
-    echo 'Mensagem enviada! <br />';
-    echo 'Id: ' . Message::$lastIdMessage;
- }else{
-    var_dump(ExceptionError::getMessage());
- }
+Bug reports, sugestões e pull requests são bem-vindos!  
+Por favor, abra issues no GitHub para discussão.
 
+---
 
+## Licença
 
-```
+MIT License © Luan Alves
 
+---
 
+## Contato
 
-## Enviar audio com URL do arquivo.
-
-
-```php
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá enviar a mensagem
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- 
- Message::type('audio');
- Message::phone('551199999999');
- Message::fileUrl('http://umsitequalquer.com/arquivos/audio.ogg');
-
- if(Message::send()){
-    echo 'Mensagem enviada! <br />';
-    echo 'Id: ' . Message::$lastIdMessage;
- }else{
-    var_dump(ExceptionError::getMessage());
- }
-
-
-
-```
-
-## Enviar imagem com URL do arquivo.
-
-
-```php
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá enviar a mensagem
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- 
- Message::type('image');
- Message::phone('551199999999');
- Message::fileUrl('http://umsitequalquer.com/arquivos/imagem.png');
- Message::caption('Um texto anexado a imagem'); // Opcional
-
- if(Message::send()){
-    echo 'Mensagem enviada! <br />';
-    echo 'Id: ' . Message::$lastIdMessage;
- }else{
-    var_dump(ExceptionError::getMessage());
- }
-
-
-```
-
-
-
-## Enviar documento com URL do arquivo.
-
-> Arquivos no formato: zip, xls, pdf, txt, doc, xml, json, ppt, pptx já foram testados e funcionam. 
-
-> Para demais tipos de arquivos não fora testado.
-
-```php
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Error\ExceptionError;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Message;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá enviar a mensagem
- Device::setInstance('NOVO_TOKEN_123', 'NOME_INSTANCIA');
- 
- Message::type('document');
- Message::phone('551199999999');
- Message::fileUrl('http://umsitequalquer.com/arquivos/arquivo.pdf');
-
- if(Message::send()){
-    echo 'Mensagem enviada! <br />';
-    echo 'Id: ' . Message::$lastIdMessage;
- }else{
-    var_dump(ExceptionError::getMessage());
- }
-
-
-```
-
-## Checar se um número existe no whatsapp
-
-> Essa função também corrige o número caso o mesmo use ou não o nono digito.
-
-```php
-
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Account;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá ser usado para verificar o número
- // Pode ser o token admin aqui também
- Device::setInstance('NOVO_TOKEN_123_TESTE', 'NOME_INSTANCIA');
- 
- Account::checkPhone('551199999999');
- $isWhatsapp = Account::$isWhatsapp;
-
- if($isWhatsapp){
-    echo 'Whatsapp válido: ' . Account::$phoneValid;
- }else{
-    echo 'Whatsapp inválido';
- }
-
- 
-
-```
-
-
-## Capturar Status 'recado' da conta do whatsapp
-
-
-```php
-
-
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Account;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá ser usado para verificar o número
- // Pode ser o token admin aqui também
- Device::setInstance('NOVO_TOKEN_123_TESTE', 'NOME_INSTANCIA');
- 
- Account::detailsAccount('551199999999');
-
- echo Account::$accountName;
- echo '<br />';
- echo Account::$accountStatus;
-
-```
-
-
-## Capturar imagem do perfil
-
-> A imagem do perfil não pode estar privada.
-
-> Caso a imagem do perfil esteja apenas para meus contatos, o dispositivo que você passa em "setInstance" deve estar na agenda de contatos do usuário em questão.
-
-```php
-
-
-<?php 
- 
- require_once 'vendor/autoload.php';
-
- use Apiwpp\Config\Api;
- use Apiwpp\Api\Evolution2\Device;
- use Apiwpp\Api\Evolution2\Account;
-
- // Definir configurações da API
- Api::setConfigs('TOKEN_ADMIN', 'http://evo.server/');
- Api::debug(true); // default true - Para não debugar não chame a função, ou passe false como parametro
-
- // Define qual instancia irá ser usado para verificar o número
- // Pode ser o token admin aqui também
- Device::setInstance('NOVO_TOKEN_123_TESTE', 'NOME_INSTANCIA');
-
- $profileImg = Account::getImageProfile('5511999999999');
-
- echo "<img src='{$profileImg}' /> "; 
- 
-
-```
+Para dúvidas ou suporte: luanalvesnsr@gmail.com
