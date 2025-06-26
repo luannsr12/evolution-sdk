@@ -8,7 +8,7 @@
 
 ## Introdução
 
-`apiwpp` é uma SDK em PHP para integração com a Evolution API, possibilitando o envio de mensagens, gerenciamento de dispositivos (instâncias) e configuração de webhooks no WhatsApp de forma simples e eficiente.
+`evolution-sdk` é uma SDK em PHP para integração com a Evolution API, possibilitando o envio de mensagens, gerenciamento de dispositivos (instâncias) e configuração de webhooks no WhatsApp de forma simples e eficiente.
 
 ---
 
@@ -110,9 +110,9 @@ if (Number::check()) {
 ### Configurar URL para recebimento de mensagens
 
 ```php
-use Apiwpp\Api\Evolution2\Webhook;
+use Apiwpp\Api\Evolution2\Device;
 
-Webhook::setUrl('https://seusite.com.br/webhook');
+Device::setUrl('https://seusite.com.br/webhook');
 Webhook::enable(true);
 ```
 
