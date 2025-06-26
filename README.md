@@ -110,8 +110,7 @@ if (Account::checkPhone('551199999999')) {
 ```php
 use Apiwpp\Api\Evolution2\Device;
 
-Device::setUrl('https://seusite.com.br/webhook');
-Webhook::enable(true);
+Device::setWebhook('https://seusite.com.br/webhook');
 ```
 
 ---
