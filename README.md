@@ -1,5 +1,5 @@
 
-# apiwpp — SDK PHP para Evolution API WhatsApp
+# SDK PHP para Evolution API WhatsApp
 
 [![Packagist](https://img.shields.io/packagist/v/luannsr12/apiwpp.svg?style=flat)](https://packagist.org/packages/luannsr12/apiwpp)
 [![License](https://img.shields.io/packagist/l/luannsr12/apiwpp.svg?style=flat)](LICENSE)
@@ -14,9 +14,9 @@
 
 ## Requisitos
 
-- PHP 8.2 ou superior  
+- PHP >= 8.2
 - Composer  
-- Servidor Evolution API configurado e acessível  
+- Servidor Evolution API >= v2.0 configurado e acessível  
 
 ---
 
@@ -79,10 +79,10 @@ if (Message::send()) {
 ### Enviar mídia (imagem, áudio, vídeo, documento)
 
 ```php
-Message::type('image');
+Message::type('image'); // audio, document, video
 Message::phone('551199999999');
 Message::file('https://link-da-imagem-ou-caminho-local.jpg');
-Message::caption('Legenda da imagem');
+Message::caption('Legenda da imagem'); // opcional
 
 Message::send();
 ```
