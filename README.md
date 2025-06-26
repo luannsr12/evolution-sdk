@@ -92,11 +92,9 @@ Message::send();
 ## Verificação de Número no WhatsApp
 
 ```php
-use Apiwpp\Api\Evolution2\Number;
+use Apiwpp\Api\Evolution2\Account;
 
-Number::phone('551199999999');
-
-if (Number::check()) {
+if (Account::checkPhone('551199999999')) {
     echo 'Número existe no WhatsApp.';
 } else {
     echo 'Número não encontrado.';
